@@ -349,7 +349,9 @@ function XPSys.core.XPHookAdd( hookadd, title, detail, cost, func )
 		end)
 	else
 		table.insert( XPSys.XPHook, { Title = title, Detail = detail, Cost = cost } )
-		func()
+		hook.Add( hookadd, "XPSys_Hook_" .. hookadd, function( ... )
+			func( ... )
+		end)
 	end
 end
 
