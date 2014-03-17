@@ -911,13 +911,13 @@ function XPSys.core.RegisterPointshopFunc()
 	function Player:PS_XPGivePoints( points )
 		self.PS_Points = self.PS_Points + points
 		self:PS_SendPoints()
-		self:SendLua("GAMEMODE:AddNotify(\"서버에서 레벨업 보상으로 " .. points .. " 골드를 지급했습니다.\", NOTIFY_GENERAL, 7)")
+		self:SendLua("GAMEMODE:AddNotify(\"Server send to you " .. points .. " points.\", NOTIFY_GENERAL, 7)")
 	end
 
 	function Player:PS_RankGivePoints( rank, points )
 		self.PS_Points = self.PS_Points + points
 		self:PS_SendPoints()
-		self:SendLua("GAMEMODE:AddNotify(\"서버에서 랭킹 " .. rank .. " 위 보상으로 " .. points .. " 골드를 지급했습니다.\", NOTIFY_GENERAL, 7)")
+		self:SendLua("GAMEMODE:AddNotify(\"Server ranking has been paid compensation of " .. points .. " points.\", NOTIFY_GENERAL, 7)")
 	end
 
 	net.Receive('PS_BuyItem', function(length, ply)
