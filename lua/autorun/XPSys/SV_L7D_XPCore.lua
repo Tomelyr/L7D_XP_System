@@ -110,14 +110,6 @@ function Players:AddXP( xp )
 	XPSys.core.XPAdd( self, xp )
 end
 
-function Players:GetXP( )
-	return self:GetNWInt( "XP" )
-end
-
-function Players:GetLevel( )
-	return self:GetNWInt( "Level" )
-end
-
 --[[########################################################
 				XPSys.core.XPRegister( pl )
 				
@@ -779,7 +771,11 @@ end
 
 XPSys.core.Loadfile( "SH_Config.lua" )
 XPSys.core.Loadfile( "SV_L7D_NetLib.lua" )
+XPSys.core.Loadfile( "SH_SharedFunc.lua" )
+
 XPSys.core.ClientLoadfile( "SH_Config.lua" )
+
+XPSys.core.ClientLoadfile( "SH_SharedFunc.lua" )
 
 --[[########################################################
 					Pointship function!
