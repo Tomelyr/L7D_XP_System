@@ -7,7 +7,7 @@
 
 XPSys = XPSys or {}
 XPSys.Config = XPSys.Config or {}
-XPSys.Config.SysVersion = "1.0" -- Do not change this!
+XPSys.Config.SysVersion = "1.1" -- Do not change this!
 
 XPSys.Config.MenuShowConsoleCommand = "XPSys_Show" -- Set menu open console command.
 
