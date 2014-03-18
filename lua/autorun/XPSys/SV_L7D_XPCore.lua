@@ -774,7 +774,6 @@ XPSys.core.Loadfile( "SV_L7D_NetLib.lua" )
 XPSys.core.Loadfile( "SH_SharedFunc.lua" )
 
 XPSys.core.ClientLoadfile( "SH_Config.lua" )
-
 XPSys.core.ClientLoadfile( "SH_SharedFunc.lua" )
 
 --[[########################################################
@@ -830,4 +829,5 @@ end)
 
 XPSys.core.ClientLoadfile( "CL_L7D_XPAdmin.lua" )
 XPSys.core.ClientLoadfile( "CL_L7D_Web.lua" )
+XPSys.core.ClientLoadfile( "CL_L7D_Font.lua" )
 MsgC( Color( 0, 255, 0 ), "//-- L7D's XP System Loaded --//\n" )

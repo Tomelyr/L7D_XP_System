@@ -7,6 +7,7 @@
 //////////////////////////////////////////////////////////--]]
 
 include( "SH_Config.lua" )
+include( "CL_L7D_Font.lua" )
 
 XPSys = XPSys or {}
 XPSys.Client32 = XPSys.Client32 or {}
@@ -16,85 +17,6 @@ XPSys.XPHookCL = XPSys.XPHookCL or {}
 XPSys.LevelCL = XPSys.LevelCL or {}
 XPSys.LogHistoryCL = XPSys.LogHistoryCL or {}
 
---[[########################################################
-						Font register
-//////////////////////////////////////////////////////////--]]
-surface.CreateFont("XP_Notice_Title3", 
-{
-	font		= "Segoe UI Light",
-	size		= 60,
-	weight		= 1000
-});
-
-surface.CreateFont("XP_Notice_Title2", 
-{
-	font		= "Segoe UI Light",
-	size		= 40,
-	weight		= 1000
-});
-
-surface.CreateFont("XP_Notice_MaxTitle", 
-{
-	font		= "Segoe UI Light",
-	size		= 60,
-	weight		= 1000
-});
-
-surface.CreateFont("XP_Notice_SubTitle", 
-{
-	font		= "Segoe UI Light",
-	size		= 30,
-	weight		= 1000
-});
-
-surface.CreateFont("XP_Notice_Title", 
-{
-	font		= "Segoe UI Light",
-	size		= 35,
-	weight		= 1000
-});
-
-surface.CreateFont("XP_Notice_Percent", 
-{
-	font		= "Segoe UI Light",
-	size		= 30,
-	weight		= 1000
-});
-
-surface.CreateFont("XP_Notice_Text", 
-{
-	font		= "Segoe UI Light",
-	size		= 30,
-	weight		= 400
-});
-
-surface.CreateFont("XP_Notice_Text3", 
-{
-	font		= "Segoe UI Light",
-	size		= 25,
-	weight		= 1000
-});
-
-surface.CreateFont("XP_Notice_Text4", 
-{
-	font		= "Segoe UI Light",
-	size		= 20,
-	weight		= 1000
-});
-
-surface.CreateFont("XP_Notice_Text5", 
-{
-	font		= "Segoe UI Light",
-	size		= 15,
-	weight		= 1000
-});
-
-surface.CreateFont("XP_Notice_Text6", 
-{
-	font		= "Segoe UI Light",
-	size		= 13,
-	weight		= 1000
-});
 
 concommand.Add( XPSys.Config.MenuShowConsoleCommand, function()
 	XPSys.LevelMainPanel()
