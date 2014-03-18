@@ -44,6 +44,10 @@ function XPSys.core.FileWrite( fileDir, fileValue )
 	file.Write( fileDir, fileValue )
 end
 
+function XPSys.core.FileAppend( fileDir, fileValue )
+	file.Append( fileDir, fileValue )
+end
+
 function XPSys.core.FileRead( fileDir )
 	return file.Read( fileDir, "DATA" )
 end
@@ -62,8 +66,10 @@ function XPSys.core.Log( str )
 		local logCount = file.Read("XPSys/Log/Count.txt", "DATA") or 0
 		local fileName = date.year .. "-" .. date.month .. "-" .. date.day
 		local str2 = "|" .. os.date() .. "|" .. str .. "\n"
-		XPSys.core.DirCreate( "XPSys/Log" )
 		local fileExist = file.Read("XPSys/Log/" .. fileName .. "-Log.txt", "DATA") or nil
+		
+		XPSys.core.DirCreate( "XPSys/Log" )
+		
 		if ( fileExist ) then
 			file.Append( "XPSys/Log/" .. fileName .. "-Log.txt", str2 )
 		else
@@ -74,7 +80,6 @@ function XPSys.core.Log( str )
 			XPSys.LogHistory[ fileName ] = {}
 			XPSys.LogCount = 0
 			XPSys.core.FileWrite( "XPSys/Log/Count.txt", tostring( 0 ) )
-		//	print("INIT LOG COUNT!!!!!!!!!!!!!!!!!!!") -- Dev function
 		end
 		
 		ServerLog( str2 )
@@ -84,8 +89,7 @@ function XPSys.core.Log( str )
 			Time = os.date(),
 			Text = str
 		}
-		
-		// table.insert( XPSys.LogHistory[ fileName ], { Count = XPSys.LogCount, Time = os.date(), Text = str } ) -- Deleted :)
+	
 		XPSys.LogHistory[ fileName ][ #XPSys.LogHistory[ fileName ] + 1 ] = formats
 		
 		XPSys.LogCount = XPSys.LogCount + 1
@@ -99,127 +103,6 @@ function XPSys.core.Log( str )
 end
 
 CreateConVar( "XPSys_RankNoticeSystem", "0", { FCVAR_REPLICATED, FCVAR_PROTECTED } )
-
-util.AddNetworkString( "XPSys_XPTableSend" )
-util.AddNetworkString( "XPSys_XPTableSendCL" )
-util.AddNetworkString( "XPSys_XP_Notice" )
-util.AddNetworkString( "XPSys_XP_Add" )
-util.AddNetworkString( "XPSys_XP_Take" )
-util.AddNetworkString( "XPSys_XP_Set" )
-util.AddNetworkString( "XPSys_XP_Init" )
-util.AddNetworkString( "XPSys_Log_Delete" )
-util.AddNetworkString( "XPSys_LogFile_Delete" )
-util.AddNetworkString( "XPSys_Level_Set" )
-
-net.Receive("XPSys_Log_Delete", function( len, cl )
-	local target = net.ReadString()
-	local count = net.ReadString()
-	local tab = XPSys.LogHistory[ target ]
-	
-	for i = 1, #tab do
-		if ( tab[i].Count == tonumber( count ) ) then
-			table.remove( tab, i )
-			XPSys.core.Print( Color( 255, 255, 0 ), "Remove log. [ " .. cl:SteamID() .. " ]" )
-			XPSys.core.LogHistorySave()
-			RunConsoleCommand("XPSys_SendCL")
-			return
-		end
-	end
-end)
-
-net.Receive("XPSys_LogFile_Delete", function( len, cl )
-	local target = net.ReadString()
-		
-	XPSys.LogHistory[ target ] = nil
-	XPSys.core.LogHistorySave()
-	RunConsoleCommand("XPSys_SendCL")
-	XPSys.core.Print( Color( 255, 255, 0 ), "Remove log table. [ " .. cl:SteamID() .. " ]" )
-end)
-
-
-net.Receive("XPSys_Level_Set", function( len, cl )
-	if ( XPSys.Config.XPAntiHackSystem_Enabled && !XPSys.Config.PermissionGroup( cl ) ) then  
-		if ( ulx ) then
-			RunConsoleCommand("ulx", "banid", cl:SteamID(), tostring( XPSys.Config.XPAntiHackSystem_BanTime ), XPSys.Config.XPAntiHackSystem_BanReason )
-		else
-			cl:Ban( XPSys.Config.XPAntiHackSystem_BanTime, XPSys.Config.XPAntiHackSystem_BanReason )
-		end
-		XPSys.core.Log( "[* !IMPORTANT! *]Level hack detected, ban player : [ " .. cl:Name() .. " , " .. cl:SteamID() .. " , " .. cl:IPAddress() .. " ]" )
-		XPSys.core.Print( Color( 255, 0, 0 ), "[Hack Detected]" .. cl:SteamID() .. " : Level Hack user detected, ban " .. XPSys.Config.XPAntiHackSystem_BanTime .. " minite." )
-		return 
-	end
-	local steamID = net.ReadString()
-	local value = net.ReadString()
-	XPSys.core.LevelSetOffline( steamID, tonumber(value) )
-	XPSys.core.Log( "Admin Level set run. { " .. steamID .. " } : [ " .. cl:Name() .. " , " .. cl:SteamID() .. " , " .. cl:IPAddress() .. " ]" )
-end)
-
-
-net.Receive("XPSys_XP_Init", function( len, cl )
-	if ( XPSys.Config.XPAntiHackSystem_Enabled && !XPSys.Config.PermissionGroup( cl ) ) then  
-		if ( ulx ) then
-			RunConsoleCommand("ulx", "banid", cl:SteamID(), tostring( XPSys.Config.XPAntiHackSystem_BanTime ), XPSys.Config.XPAntiHackSystem_BanReason )
-		else
-			cl:Ban( XPSys.Config.XPAntiHackSystem_BanTime, XPSys.Config.XPAntiHackSystem_BanReason )
-		end
-		XPSys.core.Log( "[* !IMPORTANT! *]XP hack detected, ban player : [ " .. cl:Name() .. " , " .. cl:SteamID() .. " , " .. cl:IPAddress() .. " ]" )
-		XPSys.core.Print( Color( 255, 0, 0 ), "[Hack Detected]" .. cl:SteamID() .. " : Hack user detected, ban " .. XPSys.Config.XPAntiHackSystem_BanTime .. " minite." )
-		return 
-	end
-	RunConsoleCommand("XPSys_Initialization")
-end)
-
-net.Receive("XPSys_XP_Add", function( len, cl )
-	if ( XPSys.Config.XPAntiHackSystem_Enabled && !XPSys.Config.PermissionGroup( cl ) ) then  
-		if ( ulx ) then
-			RunConsoleCommand("ulx", "banid", cl:SteamID(), tostring( XPSys.Config.XPAntiHackSystem_BanTime ), XPSys.Config.XPAntiHackSystem_BanReason )
-		else
-			cl:Ban( XPSys.Config.XPAntiHackSystem_BanTime, XPSys.Config.XPAntiHackSystem_BanReason )
-		end
-		XPSys.core.Log( "[* !IMPORTANT! *]XP hack detected, ban player : [ " .. cl:Name() .. " , " .. cl:SteamID() .. " , " .. cl:IPAddress() .. " ]" )
-		XPSys.core.Print( Color( 255, 0, 0 ), "[Hack Detected]" .. cl:SteamID() .. " : Hack user detected, ban " .. XPSys.Config.XPAntiHackSystem_BanTime .. " minite." )
-		return 
-	end
-	local steamID = net.ReadString()
-	local value = net.ReadString()
-	XPSys.core.XPAddOffline( steamID, tonumber(value) )
-	XPSys.core.Log( "Admin XP add run. { " .. steamID .. " } : [ " .. cl:Name() .. " , " .. cl:SteamID() .. " , " .. cl:IPAddress() .. " ]" )
-end)
-
-
-net.Receive("XPSys_XP_Take", function( len, cl )
-	if ( XPSys.Config.XPAntiHackSystem_Enabled && !XPSys.Config.PermissionGroup( cl ) ) then 
-		if ( ulx ) then
-			RunConsoleCommand("ulx", "banid", cl:SteamID(), tostring( XPSys.Config.XPAntiHackSystem_BanTime ), XPSys.Config.XPAntiHackSystem_BanReason )
-		else
-			cl:Ban( XPSys.Config.XPAntiHackSystem_BanTime, XPSys.Config.XPAntiHackSystem_BanReason )
-		end
-		XPSys.core.Log( "[* !IMPORTANT! *]XP hack detected, ban player : [ " .. cl:Name() .. " , " .. cl:SteamID() .. " , " .. cl:IPAddress() .. " ]" )
-		XPSys.core.Print( Color( 255, 0, 0 ), "[Hack Detected]" .. cl:SteamID() .. " : Hack user detected, ban " .. XPSys.Config.XPAntiHackSystem_BanTime .. " minite." )
-		return 
-	end
-	local steamID = net.ReadString()
-	local value = net.ReadString()
-	XPSys.core.XPTakeOffline( steamID, tonumber(value) )
-	XPSys.core.Log( "Admin XP take run. { " .. steamID .. " } : [ " .. cl:Name() .. " , " .. cl:SteamID() .. " , " .. cl:IPAddress() .. " ]" )
-end)
-
-net.Receive("XPSys_XP_Set", function( len, cl )
-	if ( XPSys.Config.XPAntiHackSystem_Enabled && !XPSys.Config.PermissionGroup( cl ) ) then 
-		if ( ulx ) then
-			RunConsoleCommand("ulx", "banid", cl:SteamID(), tostring( XPSys.Config.XPAntiHackSystem_BanTime ), XPSys.Config.XPAntiHackSystem_BanReason )
-		else
-			cl:Ban( XPSys.Config.XPAntiHackSystem_BanTime, XPSys.Config.XPAntiHackSystem_BanReason )
-		end
-		XPSys.core.Log( "[* !IMPORTANT! *]XP hack detected, ban player : [ " .. cl:Name() .. " , " .. cl:SteamID() .. " , " .. cl:IPAddress() .. " ]" )
-		XPSys.core.Print( Color( 255, 0, 0 ), "[Hack Detected]" .. cl:SteamID() .. " : Hack user detected, ban " .. XPSys.Config.XPAntiHackSystem_BanTime .. " minite." )
-		return 
-	end
-	local steamID = net.ReadString()
-	local value = net.ReadString()
-	XPSys.core.XPSetOffline( steamID, tonumber(value) )
-	XPSys.core.Log( "Admin XP set run. : { " .. steamID .. " } [ " .. cl:Name() .. " , " .. cl:SteamID() .. " , " .. cl:IPAddress() .. " ]" )
-end)
 
 local Players = FindMetaTable( "Player" )
 
@@ -539,7 +422,7 @@ end)
 
 concommand.Add("XPSys_RewardCall", function( pl, cmd, args )
 	if ( IsValid( pl ) && !XPSys.Config.PermissionGroup( pl ) ) then 
-		pl:ChatPrint("[XPSys]당신은 권한이 없습니다.")
+		pl:ChatPrint("You do not have permission!") 
 		XPSys.core.Log( "[* !WARNING! *] Permission request denied. : [ " .. pl:Name() .. " , " .. pl:SteamID() .. " , " .. pl:IPAddress() .. " ]" )
 		return 
 	end
@@ -558,17 +441,17 @@ concommand.Add("XPSys_RewardCall", function( pl, cmd, args )
 			if ( k == 1 ) then
 				if ( v.SteamID == a:SteamID() ) then
 					a:PS_RankGivePoints( k, XPSys.Config.RankReward[1] )
-					XPSys.core.Print( Color( 0, 255, 0 ), "Give gold! : [" .. k .. "st] : [" .. v.SteamID .. "]" )
+					XPSys.core.Print( Color( 0, 255, 0 ), "Give point! : [" .. k .. "st] : [" .. v.SteamID .. "]" )
 				end
 			elseif ( k == 2 ) then
 				if ( v.SteamID == a:SteamID() ) then
 					a:PS_RankGivePoints( k, XPSys.Config.RankReward[2] )
-					XPSys.core.Print( Color( 0, 255, 0 ), "Give gold! : [" .. k .. "st] : [" .. v.SteamID .. "]" )
+					XPSys.core.Print( Color( 0, 255, 0 ), "Give point! : [" .. k .. "st] : [" .. v.SteamID .. "]" )
 				end			
 			elseif ( k == 3 ) then
 				if ( v.SteamID == a:SteamID() ) then
 					a:PS_RankGivePoints( k, XPSys.Config.RankReward[3] )
-					XPSys.core.Print( Color( 0, 255, 0 ), "Give gold! : [" .. k .. "st] : [" .. v.SteamID .. "]" )
+					XPSys.core.Print( Color( 0, 255, 0 ), "Give point! : [" .. k .. "st] : [" .. v.SteamID .. "]" )
 				end
 			end
 		end
@@ -577,7 +460,7 @@ end)
 
 concommand.Add("XPSys_XPSysAdd", function( pl, cmd, args )
 	if ( IsValid( pl ) && !XPSys.Config.PermissionGroup( pl ) ) then 
-		pl:ChatPrint("[XPSys]당신은 권한이 없습니다.")
+		pl:ChatPrint("You do not have permission!") 
 		XPSys.core.Log( "[* !WARNING! *] Permission request denied. : [ " .. pl:Name() .. " , " .. pl:SteamID() .. " , " .. pl:IPAddress() .. " ]" )
 		return 
 	end
@@ -587,17 +470,17 @@ concommand.Add("XPSys_XPSysAdd", function( pl, cmd, args )
 			if ( args[2] ) then
 				XPSys.core.XPAdd( a[1], args[2] )
 			else
-				pl:ChatPrint("[XPSys]추가할 XP 를 입력하세요.[args[2]]")
+				pl:ChatPrint("[XPSys] args[2] is missing.") 
 			end
 		else
-			pl:ChatPrint("[XPSys]플레이어를 찾을 수 없습니다.")
+			pl:ChatPrint("[XPSys] Can't find player.") 
 		end
 	end
 end)
 
 concommand.Add("XPSys_XPSysTake", function( pl, cmd, args )
 	if ( IsValid( pl ) && !XPSys.Config.PermissionGroup( pl ) ) then 
-		pl:ChatPrint("[XPSys]당신은 권한이 없습니다.")
+		pl:ChatPrint("You do not have permission!") 
 		XPSys.core.Log( "[* !WARNING! *] Permission request denied. : [ " .. pl:Name() .. " , " .. pl:SteamID() .. " , " .. pl:IPAddress() .. " ]" )
 		return 
 	end
@@ -607,17 +490,17 @@ concommand.Add("XPSys_XPSysTake", function( pl, cmd, args )
 			if ( args[2] ) then
 				XPSys.core.XPTake( a[1], args[2] )
 			else
-				pl:ChatPrint("[XPSys]뺏을 XP 를 입력하세요.[args[2]]")
+				pl:ChatPrint("[XPSys] args[2] is missing.") 
 			end
 		else
-			pl:ChatPrint("[XPSys]플레이어를 찾을 수 없습니다.")
+			pl:ChatPrint("[XPSys] Can't find player.") 
 		end
 	end
 end)
 
 concommand.Add("XPSys_LevelSysSetLevel", function( pl, cmd, args )
 	if ( IsValid( pl ) && !XPSys.Config.PermissionGroup( pl ) ) then 
-		pl:ChatPrint("[XPSys]당신은 권한이 없습니다.")
+		pl:ChatPrint("You do not have permission!") 
 		XPSys.core.Log( "[* !WARNING! *] Permission request denied. : [ " .. pl:Name() .. " , " .. pl:SteamID() .. " , " .. pl:IPAddress() .. " ]" )
 		return
 	end
@@ -634,10 +517,10 @@ concommand.Add("XPSys_LevelSysSetLevel", function( pl, cmd, args )
 					end
 				end
 			else
-				pl:ChatPrint("[XPSys]설정할 레벨을 입력하세요.[args[2]]")
+				pl:ChatPrint("[XPSys] args[2] is missing.") 
 			end
 		else
-			pl:ChatPrint("[XPSys]플레이어를 찾을 수 없습니다.")
+			pl:ChatPrint("[XPSys] Can't find player.") 
 		end
 	end
 end)
@@ -647,13 +530,13 @@ concommand.Add("XPSys_Load", function( pl, cmd, args )
 	XPSys.core.LogHistoryLoad()
 end)
 
-timer.Create("XPSys_XPSystemSave", 100, 0, function()
+timer.Create("XPSys_XPSystemSave", XPSys.Config.DataSaveInterval = 150, 0, function()
 	XPSys.core.XPSave()
 	XPSys.core.LogHistorySave()
 	RunConsoleCommand("XPSys_SendCL")
 end)
 
-timer.Create("XPSys_XPSystemAutoNotice", 150, 0, function()
+timer.Create("XPSys_XPSystemAutoNotice", XPSys.Config.RankNoticeTimer, 0, function()
 	if ( GetConVarString("XPSys_RankNoticeSystem") == "1" ) then
 		RunConsoleCommand("XPSys_SendCL")
 		umsg.Start("XPSys_RankNoticeCall")
@@ -661,7 +544,7 @@ timer.Create("XPSys_XPSystemAutoNotice", 150, 0, function()
 	end
 end)
 
-timer.Create("XPSys_RankReward", 100, 0, function()
+timer.Create("XPSys_RankReward", XPSys.Config.RankRewardTimer, 0, function()
 	table.sort( XPSys.XP, function( a, b )
 		return a.XP > b.XP
 	end)
@@ -777,7 +660,6 @@ function XPSys.core.XPSet( pl, xp )
 		return
 	end
 end
-
 
 function XPSys.core.LevelSetOffline( plSteamID, level )
 	if ( #XPSys.XP != 0 ) then
@@ -896,6 +778,7 @@ function XPSys.core.XPSetOffline( plSteamID, xp )
 end
 
 XPSys.core.Loadfile( "SH_Config.lua" )
+XPSys.core.Loadfile( "SV_L7D_NetLib.lua" )
 XPSys.core.ClientLoadfile( "SH_Config.lua" )
 
 --[[########################################################

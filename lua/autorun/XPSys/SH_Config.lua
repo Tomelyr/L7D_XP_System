@@ -13,6 +13,12 @@ XPSys.Config.MenuShowConsoleCommand = "XPSys_Show" -- Set menu open console comm
 
 XPSys.Config.UseRewardSystem = false -- You added pointshop?, this config is use reward system.
 
+XPSys.Config.RankRewardTimer = 100 -- Set rank reward timer ( sec )
+
+XPSys.Config.RankNoticeTimer = 150 -- Set rank notice timer ( sec )
+
+XPSys.Config.DataSaveInterval = 150 -- Set data save interval timer ( sec )
+
 XPSys.Config.LogSystem_Enabled = true -- Recommended.
 
 XPSys.Config.XPAntiHackSystem_Enabled = true -- Set AntiHack system status.
