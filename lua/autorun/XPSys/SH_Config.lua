@@ -10,6 +10,16 @@ XPSys.Config = XPSys.Config or {}
 XPSys.Config.SysVersion = "1.1" -- Do not change this!
 
 XPSys.Config.MenuShowConsoleCommand = "XPSys_Show" -- Set menu open console command.
+XPSys.Config.OpenKey = "F2" -- Set menu open key.
+XPSys.Config.ChatOpenCommand = "/XPSys_open" -- Set menu open chat command.
+XPSys.Config.ChatOpenCommand_Output = "" -- Set menu open chat command output string.
+--[[
+	= Open Key List =
+	F1
+	F2
+	F3
+	F4
+--]]
 
 XPSys.Config.UseRewardSystem = false -- You added pointshop?, this config is use reward system.
 

@@ -770,6 +770,7 @@ function XPSys.core.XPSetOffline( plSteamID, xp )
 end
 
 XPSys.core.Loadfile( "SH_Config.lua" )
+XPSys.core.Loadfile( "SV_L7D_OpenHOOK.lua" )
 XPSys.core.Loadfile( "SV_L7D_NetLib.lua" )
 XPSys.core.Loadfile( "SH_SharedFunc.lua" )
 

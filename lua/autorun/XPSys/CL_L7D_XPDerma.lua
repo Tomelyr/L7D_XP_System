@@ -17,8 +17,15 @@ XPSys.XPHookCL = XPSys.XPHookCL or {}
 XPSys.LevelCL = XPSys.LevelCL or {}
 XPSys.LogHistoryCL = XPSys.LogHistoryCL or {}
 
-
 concommand.Add( XPSys.Config.MenuShowConsoleCommand, function()
+	XPSys.LevelMainPanel()
+end)
+
+usermessage.Hook("XPSys_RankNoticeCall", function( data )
+	XPSys.RankNoticePanel()
+end)
+
+net.Receive("XPSys_MenuOpen", function( len, cl )
 	XPSys.LevelMainPanel()
 end)
 
@@ -33,10 +40,6 @@ net.Receive("XPSys_XPTableSendCL", function( len, cl )
 	XPSys.XPHookCL = net.ReadTable()
 	XPSys.LevelCL = net.ReadTable()
 	XPSys.LogHistoryCL = net.ReadTable()
-end)
-
-usermessage.Hook("XPSys_RankNoticeCall", function( data )
-	XPSys.RankNoticePanel()
 end)
 
 include( "CL_L7D_Web.lua" )
