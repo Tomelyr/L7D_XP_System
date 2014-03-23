@@ -48,6 +48,14 @@ if ( SERVER ) then
 	XPSys.XPHook = {}
 	XPSys.XPLevel = {}
 	XPSys.BlackList = {}
+	
+	// Hook Stack bug fix.
+	for i = 1, #XPSys.XPHookList do
+		if ( XPSys.XPHookList[i].hookName && XPSys.XPHookList[i].hookUniqueID ) then
+			XPSys.core.XPHookRemove( XPSys.XPHookList[i].hookName, XPSys.XPHookList[i].hookUniqueID )
+			XPSys.XPHookList[i] = nil
+		end
+	end
 
 	XPSys.core.XPHookAdd( "PlayerSay", "Say", "", "0.01" )
 	XPSys.core.XPHookAdd( "PlayerSpawnProp", "Prop Spawn", "", "0.05" )
@@ -57,15 +65,37 @@ if ( SERVER ) then
 	XPSys.core.XPHookAdd( "PlayerDeath", "Kill Player", "", "0.03", function( pl, wep, killer )
 		if ( IsValid( killer ) ) then
 			if ( killer:IsPlayer() ) then
-				XPSys.core.XPAdd( killer, 0.03 )
-				print( killer )
-				print( pl:SteamID() .. " ..." )
+				if ( wep:GetClass() != "rpg_missile" ) then
+					XPSys.core.XPAdd( killer, 0.03 )
+				end
+			end
+		end
+	end)
+	
+	XPSys.core.XPHookAdd( "PlayerDeath", "RPG Kill!", "Bonk!", "0.07", function( pl, wep, killer )
+		if ( IsValid( killer ) ) then
+			if ( killer:IsPlayer() ) then
+				if ( wep:GetClass() == "rpg_missile" ) then
+					XPSys.core.XPAdd( killer, 0.07 )
+				end
 			end
 		end
 	end)
 
 	XPSys.core.XPHookInfoAdd( 1, "Item Buy", "", "0.1" )
 	XPSys.core.XPHookInfoAdd( 2, "Item Sell", "", "0.1" )
+	
+	--[[// #################################### //
+		= XP Hook Add Document =
+		XPSys.core.XPHookAdd( Hook Name, Title, Detail, XP Reward Cost, Custom Function )
+		
+		EX : XPSys.core.XPHookAdd( "PropBreak", "Prop Break", "", "0.03", function( pl )
+			print( pl:SteamID() )
+		end)
+		
+		Output : STEAM:0:1:TEST
+
+	--]]// #################################### //
 
 	XPSys.core.LevelAdd( 0, 1, 5 )
 	XPSys.core.LevelAdd( 1, 30, 10 )
@@ -99,7 +129,22 @@ if ( SERVER ) then
 	XPSys.core.LevelAdd( 29, 1200000, 500000 )
 	XPSys.core.LevelAdd( 30, 1500000, 10000000 )
 	
+	--[[// #################################### //
+		= XP Level Add Document =
+		XPSys.core.LevelAdd( Level Index, XP Criteria, Level Reward Cost )
+		
+		EX : XPSys.core.BlacklistAdd( 100, 1000000000, 300 )
+		Index : 100, Criteria : 1000000000, Reward : 300
+	--]]// #################################### //
+	
 --	XPSys.core.BlacklistAdd( "" )
+
+	--[[// #################################### //
+		= Blacklist Document =
+		XPSys.core.BlacklistAdd( Target Steam ID )
+		
+		EX : XPSys.core.BlacklistAdd( "STEAM_0:1:TEST" )
+	--]]// #################################### //
 end
 
 

@@ -10,6 +10,7 @@ XPSys = XPSys or {}
 XPSys.core = XPSys.core or {}
 XPSys.XP = XPSys.XP or {}
 XPSys.XPHook = {}
+XPSys.XPHookList = XPSys.XPHookList or {}
 XPSys.XPLevel = {}
 XPSys.BlackList = {}
 XPSys.LogHistory = XPSys.LogHistory or {}
@@ -217,17 +218,24 @@ end
 	EX : XPSys.core.XPHookAdd( "PlayerAuth", "Auth", "Yeah", 15, nil )
 //////////////////////////////////////////////////////////--]]
 function XPSys.core.XPHookAdd( hookadd, title, detail, cost, func )
+	local randomUniqueID = math.random( 1, 1000000 )
 	if ( !func ) then
 		table.insert( XPSys.XPHook, { Title = title, Detail = detail, Cost = cost } )
-		hook.Add( hookadd, "XPSys_Hook_" .. hookadd, function( pl )
+		hook.Add( hookadd, "XPSys_Hook_" .. hookadd .. randomUniqueID, function( pl )
 			XPSys.core.XPAdd( pl, tonumber(cost) )
 		end)
+		XPSys.XPHookList[ #XPSys.XPHookList + 1 ] = { hookName = hookadd, hookUniqueID = "XPSys_Hook_" .. hookadd .. randomUniqueID }
 	else
 		table.insert( XPSys.XPHook, { Title = title, Detail = detail, Cost = cost } )
-		hook.Add( hookadd, "XPSys_Hook_" .. hookadd, function( ... )
+		hook.Add( hookadd, "XPSys_Hook_" .. hookadd .. randomUniqueID, function( ... )
 			func( ... )
 		end)
+		XPSys.XPHookList[ #XPSys.XPHookList + 1 ] = { hookName = hookadd, hookUniqueID = "XPSys_Hook_" .. hookadd .. randomUniqueID }
 	end
+end
+
+function XPSys.core.XPHookRemove( hookName, hookUniqueID )
+	hook.Remove( hookName, hookUniqueID )
 end
 
 --[[########################################################
