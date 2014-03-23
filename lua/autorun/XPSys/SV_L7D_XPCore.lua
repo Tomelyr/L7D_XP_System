@@ -321,6 +321,9 @@ function XPSys.core.XPLevelUP( plSteamID, level )
 	end
 end
 
+XPSys.core.Loadfile( "SH_Config.lua" )
+XPSys.core.ClientLoadfile( "SH_Config.lua" )
+
 --[[########################################################
 						HOOK! :)
 //////////////////////////////////////////////////////////--]]
@@ -769,12 +772,11 @@ function XPSys.core.XPSetOffline( plSteamID, xp )
 	end
 end
 
-XPSys.core.Loadfile( "SH_Config.lua" )
+
 XPSys.core.Loadfile( "SV_L7D_OpenHOOK.lua" )
 XPSys.core.Loadfile( "SV_L7D_NetLib.lua" )
 XPSys.core.Loadfile( "SH_SharedFunc.lua" )
 
-XPSys.core.ClientLoadfile( "SH_Config.lua" )
 XPSys.core.ClientLoadfile( "SH_SharedFunc.lua" )
 
 --[[########################################################

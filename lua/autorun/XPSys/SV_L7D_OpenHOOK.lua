@@ -7,7 +7,7 @@ KeyHook[4] = "ShowSpare2"
 
 util.AddNetworkString("XPSys_MenuOpen")
 
-function XPSys.system.OpenKeyHook( keyhook )
+function XPSys.core.OpenKeyHook( keyhook )
 	if ( keyhook == "F1" ) then
 		XPSys.core.Print( Color( 0, 255, 0 ), "Menu open key set : " .. keyhook )
 		hook.Add(KeyHook[1], "XPSys.OpenKey.1", function( pl )
@@ -38,7 +38,7 @@ function XPSys.system.OpenKeyHook( keyhook )
 	end
 end
 
-function XPSys.system.OpenKeyHook_Chat( pl, text )
+function XPSys.core.OpenKeyHook_Chat( pl, text )
 	if ( !IsValid( pl ) ) then return end
 	if ( !text ) then return end
 	if ( !XPSys.Config.ChatOpenCommand ) then return end
@@ -52,8 +52,8 @@ function XPSys.system.OpenKeyHook_Chat( pl, text )
 	end
 end
 
-hook.Add("PlayerSay", "XPSys.OpenKeyHook_Chat", XPSys.system.OpenKeyHook_Chat)
+hook.Add("PlayerSay", "XPSys.OpenKeyHook_Chat", XPSys.core.OpenKeyHook_Chat)
 
 hook.Add("Initialize", "XPSys.OpenKeyHook", function()
-	XPSys.system.OpenKeyHook( XPSys.Config.OpenKey )
+	XPSys.core.OpenKeyHook( XPSys.Config.OpenKey )
 end)

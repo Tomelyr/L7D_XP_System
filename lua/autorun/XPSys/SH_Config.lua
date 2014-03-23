@@ -53,6 +53,16 @@ if ( SERVER ) then
 	XPSys.core.XPHookAdd( "PlayerSpawnProp", "Prop Spawn", "", "0.05" )
 	XPSys.core.XPHookAdd( "PlayerSpawnRagdoll", "Ragdoll Spawn", "", "0.08" )
 	XPSys.core.XPHookAdd( "PropBreak", "Prop Break", "", "0.03" )
+	
+	XPSys.core.XPHookAdd( "PlayerDeath", "Kill Player", "", "0.03", function( pl, wep, killer )
+		if ( IsValid( killer ) ) then
+			if ( killer:IsPlayer() ) then
+				XPSys.core.XPAdd( killer, 0.03 )
+				print( killer )
+				print( pl:SteamID() .. " ..." )
+			end
+		end
+	end)
 
 	XPSys.core.XPHookInfoAdd( 1, "Item Buy", "", "0.1" )
 	XPSys.core.XPHookInfoAdd( 2, "Item Sell", "", "0.1" )
