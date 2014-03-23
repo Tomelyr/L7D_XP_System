@@ -522,7 +522,7 @@ concommand.Add("XPSys_Load", function( pl, cmd, args )
 	XPSys.core.LogHistoryLoad()
 end)
 
-timer.Create("XPSys_XPSystemSave", XPSys.Config.DataSaveInterval = 150, 0, function()
+timer.Create("XPSys_XPSystemSave", XPSys.Config.DataSaveInterval, 0, function()
 	XPSys.core.XPSave()
 	XPSys.core.LogHistorySave()
 	RunConsoleCommand("XPSys_SendCL")
