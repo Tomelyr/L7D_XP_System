@@ -133,7 +133,7 @@ if ( SERVER ) then
 		= XP Level Add Document =
 		XPSys.core.LevelAdd( Level Index, XP Criteria, Level Reward Cost )
 		
-		EX : XPSys.core.BlacklistAdd( 100, 1000000000, 300 )
+		EX : XPSys.core.LevelAdd( 100, 1000000000, 300 )
 		Index : 100, Criteria : 1000000000, Reward : 300
 	--]]// #################################### //
 	
