@@ -44,6 +44,7 @@ end)
 
 include( "CL_L7D_Web.lua" )
 include( "CL_L7D_XPAdmin.lua" )
+include( "SH_SharedFunc.lua" )
 
 function XPSys.RankNoticePanel()
 	local LP = LocalPlayer()
