@@ -125,7 +125,7 @@ function XPSys.core.XPRegister( pl )
 					XPSys.core.XPSave()
 					pl:SetNWInt( "XP", 0 )
 					pl:SetNWInt( "Level", 0 )
-					RunConsoleCommand("XPSys_SendCL")
+					XPSys.core.SendTableToTarget( pl )
 					XPSys.core.Print( Color( 0, 255, 0 ), "XP Data base Register : " .. pl:SteamID() )
 					XPSys.core.Log( "XP Data base register. : [ " .. pl:Name() .. " , " .. pl:SteamID() .. " , " .. pl:IPAddress() .. " ]" )
 					return
@@ -142,7 +142,7 @@ function XPSys.core.XPRegister( pl )
 		table.insert( XPSys.XP, { Name = pl:Name(), SteamID = pl:SteamID(), XP = 0, Level = 0 } )
 		XPSys.core.Print( Color( 0, 255, 0 ), "XP Data base Register : " .. pl:SteamID() )
 		XPSys.core.Log( "XP Data base register. : [ " .. pl:Name() .. " , " .. pl:SteamID() .. " , " .. pl:IPAddress() .. " ]" )
-		RunConsoleCommand("XPSys_SendCL")
+		XPSys.core.SendTableToTarget( pl )
 		return
 	end
 end
@@ -164,7 +164,9 @@ function XPSys.core.XPSave()
 			XPSys.core.Print( Color( 255, 255, 0 ), "DB Save Check : Problem found :(" )
 			return
 		end
-		RunConsoleCommand("XPSys_SendCL")
+		for k, v in pairs( player.GetAll() ) do
+			XPSys.core.SendTableToTarget( v )
+		end
 	else
 		XPSys.core.FileWrite( "XPSys/XP.txt", "[]" )	
 		XPSys.core.Print( Color( 0, 255, 0 ), "0's XP datebase saved." )
@@ -176,7 +178,9 @@ function XPSys.core.LogHistorySave()
 		local encode = util.TableToJSON( XPSys.LogHistory )
 		XPSys.core.FileWrite( "XPSys/LogHistory.txt", encode )
 		XPSys.core.Print( Color( 0, 255, 0 ), "Log history datebase saved." )
-		RunConsoleCommand("XPSys_SendCL")
+		for k, v in pairs( player.GetAll() ) do
+			XPSys.core.SendTableToTarget( v )
+		end
 	end
 end
 
@@ -197,7 +201,9 @@ function XPSys.core.XPLoad()
 			XPSys.core.Print( Color( 255, 255, 0 ), "DB Load Check : Problem found :(" )
 			return
 		end
-		RunConsoleCommand("XPSys_SendCL")
+		for k, v in pairs( player.GetAll() ) do
+			XPSys.core.SendTableToTarget( v )
+		end
 	end
 end
 
@@ -207,7 +213,9 @@ function XPSys.core.LogHistoryLoad()
 		local decode = util.JSONToTable( fileRead )
 		XPSys.LogHistory = decode
 		XPSys.core.Print( Color( 0, 255, 0 ), "Log history database loaded." )
-		RunConsoleCommand("XPSys_SendCL")
+		for k, v in pairs( player.GetAll() ) do
+			XPSys.core.SendTableToTarget( v )
+		end
 	end
 end
 
@@ -289,9 +297,9 @@ function XPSys.core.XPLevelCheck()
 						XPSys.core.Log( "Level up. { " .. curretlvl .. " > " .. curretlvl + 1 .. " }: [ " .. XPSys.XP[i].Name .. " , " .. XPSys.XP[i].SteamID .. " ]" )
 						XPSys.core.XPLevelUP( XPSys.XP[i].SteamID, v.Index )
 						XPSys.core.XPSave()
-						RunConsoleCommand("XPSys_SendCL")
 						for a, d in pairs( player.GetAll() ) do
 							if ( d:SteamID() == XPSys.XP[i].SteamID ) then
+								XPSys.core.SendTableToTarget( d )
 								net.Start("XPSys_XP_Notice")
 								net.WriteTable( { Name = d:Name(), Text = "", CurretLevel = curretlvl, NextLevel = curretlvl + 1, Cost = v.Reward } )
 								net.Send( d )
@@ -337,7 +345,7 @@ XPSys.core.ClientLoadfile( "SH_Config.lua" )
 //////////////////////////////////////////////////////////--]]
 hook.Add( "PlayerAuthed", "XPSys_DataBaseRegister", function( pl )
 	XPSys.core.XPRegister( pl )
-	RunConsoleCommand("XPSys_SendCL")
+	XPSys.core.SendTableToTarget( pl )
 end)
 
 hook.Add("Initialize", "XPSys_InitLoadXP", function()
@@ -361,9 +369,9 @@ end)
 					Console Command :)
 //////////////////////////////////////////////////////////--]]
 concommand.Add("XPSys_Initialization", function( ply, cmd, args )
-	if ( IsValid( ply ) and !XPSys.Config.PermissionGroup( pl ) ) then 
-		pl:ChatPrint("You do not have permission!") 
-		XPSys.core.Log( "[* !WARNING! *] Permission request denied. : [ " .. pl:Name() .. " , " .. pl:SteamID() .. " , " .. pl:IPAddress() .. " ]" )
+	if ( IsValid( ply ) and !XPSys.Config.PermissionGroup( ply ) ) then 
+		ply:ChatPrint("You do not have permission!") 
+		XPSys.core.Log( "[* !WARNING! *] Permission request denied. : [ " .. ply:Name() .. " , " .. ply:SteamID() .. " , " .. ply:IPAddress() .. " ]" )
 		return 
 	end
 	XPSys.core.FileDelete( "XPSys/XP.txt" )
@@ -376,8 +384,9 @@ concommand.Add("XPSys_Initialization", function( ply, cmd, args )
 	for k, v in pairs( player.GetAll() ) do
 		v:SetNWInt( "XP", 0 )
 		v:SetNWInt( "Level", 0 )
+		XPSys.core.SendTableToTarget( v )
 	end
-	RunConsoleCommand("XPSys_SendCL")
+	
 	XPSys.core.Print( Color( 0, 255, 0 ), "XP system initialization succeeded." )
 	if ( IsValid( ply ) ) then
 		XPSys.core.Log( "[* !IMPORTANT! *] XP system initialization succeeded. [ " .. ply:Name() .. " , " .. ply:SteamID() .. " , " .. ply:IPAddress() .. " ]" )
@@ -386,15 +395,17 @@ concommand.Add("XPSys_Initialization", function( ply, cmd, args )
 	end
 end)
 
-concommand.Add("XPSys_SendCL", function( )
-	net.Start("XPSys_XPTableSendCL")
-	net.WriteTable( XPSys.XP )
-	net.WriteTable( XPSys.XPLevel )
-	net.WriteTable( XPSys.XPHook )
-	net.WriteTable( XPSys.XPLevel )
-	net.WriteTable( XPSys.LogHistory )
-	net.Broadcast()
-end)
+function XPSys.core.SendTableToTarget( pl )
+	if ( IsValid( pl ) ) then
+		net.Start("XPSys_XPTableSendCL")
+		net.WriteTable( XPSys.XP )
+		net.WriteTable( XPSys.XPLevel )
+		net.WriteTable( XPSys.XPHook )
+		net.WriteTable( XPSys.XPLevel )
+		net.WriteTable( XPSys.LogHistory )
+		net.Send( pl )
+	end
+end
 
 concommand.Add("XPSys_Save", function( )
 	XPSys.core.XPSave()
@@ -536,12 +547,10 @@ end)
 timer.Create("XPSys_XPSystemSave", XPSys.Config.DataSaveInterval, 0, function()
 	XPSys.core.XPSave()
 	XPSys.core.LogHistorySave()
-	RunConsoleCommand("XPSys_SendCL")
 end)
 
 timer.Create("XPSys_XPSystemAutoNotice", XPSys.Config.RankNoticeTimer, 0, function()
 	if ( GetConVarString("XPSys_RankNoticeSystem") == "1" ) then
-		RunConsoleCommand("XPSys_SendCL")
 		umsg.Start("XPSys_RankNoticeCall")
 		umsg.End()
 	end
@@ -626,7 +635,7 @@ function XPSys.core.XPTake( pl, takexp )
 					pl:SetNWInt( "XP", XPSys.XP[i].XP )
 					XPSys.core.Print( Color( 0, 255, 0 ), "XP take finished : [" .. XPSys.XP[i].SteamID .. " , " .. XPSys.XP[i].XP .. "]" )
 					XPSys.core.XPSave()
-					RunConsoleCommand("XPSys_SendCL")
+					XPSys.core.SendTableToTarget( pl )
 					return
 				else
 					XPSys.core.Print( Color( 0, 255, 0 ), "XP take failed : [" .. XPSys.XP[i].SteamID .. " , " .. XPSys.XP[i].XP .. "]" )
@@ -650,7 +659,7 @@ function XPSys.core.XPSet( pl, xp )
 					pl:SetNWInt( "XP", XPSys.XP[i].XP )
 					XPSys.core.Print( Color( 0, 255, 0 ), "XP set finished : [" .. XPSys.XP[i].SteamID .. " , " .. XPSys.XP[i].XP .. "]" )
 					XPSys.core.XPSave()
-					RunConsoleCommand("XPSys_SendCL")
+					XPSys.core.SendTableToTarget( pl )
 					return
 				else
 					XPSys.core.Print( Color( 0, 255, 0 ), "XP set failed : [" .. XPSys.XP[i].SteamID .. " , " .. XPSys.XP[i].XP .. "]" )
@@ -676,9 +685,9 @@ function XPSys.core.LevelSetOffline( plSteamID, level )
 						v:SetNWInt( "XP", XPSys.XP[i].XP )
 						v:SetNWInt( "Level", XPSys.XP[i].Level )
 						XPSys.XP[i].Name = v:Name()
+						XPSys.core.SendTableToTarget( v )
 					end
 				end
-				RunConsoleCommand("XPSys_SendCL")
 				XPSys.core.XPSave()
 				XPSys.core.Print( Color( 0, 255, 0 ), "Level set finished, : " .. XPSys.XP[i].Level )
 				return
@@ -704,9 +713,9 @@ function XPSys.core.XPAddOffline( plSteamID, addxp )
 						v:SetNWInt( "XP", XPSys.XP[i].XP )
 						v:SetNWInt( "Level", XPSys.XP[i].Level )
 						XPSys.XP[i].Name = v:Name()
+						XPSys.core.SendTableToTarget( v )
 					end
 				end
-				RunConsoleCommand("XPSys_SendCL")
 				XPSys.core.XPSave()
 				XPSys.core.Print( Color( 0, 255, 0 ), "XP Add finished, : " .. XPSys.XP[i].XP )
 				return
@@ -732,11 +741,11 @@ function XPSys.core.XPTakeOffline( plSteamID, takexp )
 							v:SetNWInt( "XP", XPSys.XP[i].XP )
 							v:SetNWInt( "Level", XPSys.XP[i].Level )
 							XPSys.XP[i].Name = v:Name()
+							XPSys.core.SendTableToTarget( v )
 						end
 					end
 					XPSys.core.Print( Color( 0, 255, 0 ), "XP Take finished, : " .. XPSys.XP[i].XP )
 					XPSys.core.XPSave()
-					RunConsoleCommand("XPSys_SendCL")
 					return
 				else
 					XPSys.core.Print( Color( 255, 255, 0 ), "XP Take failed, : " .. XPSys.XP[i].XP )
@@ -762,11 +771,11 @@ function XPSys.core.XPSetOffline( plSteamID, xp )
 							v:SetNWInt( "XP", XPSys.XP[i].XP )
 							v:SetNWInt( "Level", XPSys.XP[i].Level )
 							XPSys.XP[i].Name = v:Name()
+							XPSys.core.SendTableToTarget( v )
 						end
 					end
 					XPSys.core.Print( Color( 0, 255, 0 ), "XP Set finished, : " .. XPSys.XP[i].XP )
 					XPSys.core.XPSave()
-					RunConsoleCommand("XPSys_SendCL")
 					return
 				else
 					XPSys.core.Print( Color( 255, 255, 0 ), "XP Set failed, : " .. XPSys.XP[i].XP )

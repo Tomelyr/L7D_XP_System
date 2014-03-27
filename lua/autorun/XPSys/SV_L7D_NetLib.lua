@@ -32,7 +32,7 @@ net.Receive("XPSys_Log_Delete", function( len, cl )
 			table.remove( tab, i )
 			XPSys.core.Print( Color( 255, 255, 0 ), "Remove log. [ " .. cl:SteamID() .. " ]" )
 			XPSys.core.LogHistorySave()
-			RunConsoleCommand("XPSys_SendCL")
+			XPSys.core.SendTableToTarget( cl )
 			return
 		end
 	end
@@ -43,7 +43,7 @@ net.Receive("XPSys_LogFile_Delete", function( len, cl )
 		
 	XPSys.LogHistory[ target ] = nil
 	XPSys.core.LogHistorySave()
-	RunConsoleCommand("XPSys_SendCL")
+	XPSys.core.SendTableToTarget( cl )
 	XPSys.core.Print( Color( 255, 255, 0 ), "Remove log table. [ " .. cl:SteamID() .. " ]" )
 end)
 
